@@ -1,0 +1,49 @@
+﻿<UserControl x:Class="SudokuSolver_WPF.UserControls.Sudoku"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SudokuSolver_WPF.UserControls"
+             xmlns:converter="clr-namespace:SudokuSolver_WPF.Converter"
+             xmlns:vm="clr-namespace:SudokuSolver_WPF.ViewModels"
+             mc:Ignorable="d" 
+             d:DesignHeight="500" d:DesignWidth="500">
+    <UserControl.DataContext>
+        <vm:SudokuViewModel/>
+    </UserControl.DataContext>
+    <UserControl.Resources>
+        <converter:EmptyValueConverter x:Key="emptyValueConverter"/>
+        
+        <Style TargetType="ItemsControl">
+            <Style.Triggers>
+                <Trigger Property="ItemsControl.AlternationCount" Value="1">
+                    <Setter Property="Background" Value="LightGray"/>
+                </Trigger>
+                <Trigger Property="ItemsControl.AlternationCount" Value="2">
+                    <Setter Property="Background" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="TextBlock">
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="30"/>
+            <Setter Property="Foreground" Value="Blue"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <ItemsControl ItemsSource="{Binding Cells}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Width="460" Height="460" Margin="10 10 10 10" Rows="9" Columns="9" Background="White"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <DataGridCell BorderBrush="Black" BorderThickness="1" Content="{Binding Content, Converter={StaticResource emptyValueConverter}}"/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</UserControl>

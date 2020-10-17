@@ -1,0 +1,49 @@
+﻿<Window x:Class="SudokuSolver_WPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SudokuSolver_WPF"
+        xmlns:vm="clr-namespace:SudokuSolver_WPF.ViewModels"
+        xmlns:converter="clr-namespace:SudokuSolver_WPF.Converter"
+        xmlns:controls="clr-namespace:SudokuSolver_WPF.UserControls"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="550" Width="550">
+    <Window.DataContext>
+        <vm:MainWindowViewModel/>
+    </Window.DataContext>
+    <Window.Resources>
+        <converter:EmptyValueConverter x:Key="emptyValueConverter"/>
+
+        <Style TargetType="ItemsControl">
+            <Style.Triggers>
+                <Trigger Property="ItemsControl.AlternationCount" Value="1">
+                    <Setter Property="Background" Value="LightGray"/>
+                </Trigger>
+                <Trigger Property="ItemsControl.AlternationCount" Value="2">
+                    <Setter Property="Background" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="TextBlock">
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="30"/>
+            <Setter Property="Foreground" Value="Blue"/>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <ToolBarTray>
+            <ToolBar>
+                <Button Content="Sudoku Laden" Command="{Binding LoadSudoku}"/>
+                <Button Content="Sudoku Lösen"/>
+            </ToolBar>
+        </ToolBarTray>
+
+        <controls:Sudoku Grid.Row="1" DataContext="{Binding SudokuViewModel}"/>
+    </Grid>
+</Window>
