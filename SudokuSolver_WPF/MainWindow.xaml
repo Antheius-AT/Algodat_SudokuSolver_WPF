@@ -39,8 +39,9 @@
         </Grid.RowDefinitions>
         <ToolBarTray>
             <ToolBar>
-                <Button Content="Sudoku Laden" Command="{Binding LoadSudoku}"/>
-                <Button Content="Sudoku Lösen"/>
+                <Button Content="Sudoku Laden" Command="{Binding SudokuViewModel.LoadSudoku}"/>
+                <Button Content="Sudoku Löschen" Command="{Binding SudokuViewModel.UnloadSudoku}"/>
+                <Button Content="Sudoku Lösen" Command="{Binding SudokuViewModel.SolveSudoku}"/>
             </ToolBar>
         </ToolBarTray>
 

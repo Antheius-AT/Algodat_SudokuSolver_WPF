@@ -13,17 +13,9 @@
     </UserControl.DataContext>
     <UserControl.Resources>
         <converter:EmptyValueConverter x:Key="emptyValueConverter"/>
+
         
-        <Style TargetType="ItemsControl">
-            <Style.Triggers>
-                <Trigger Property="ItemsControl.AlternationCount" Value="1">
-                    <Setter Property="Background" Value="LightGray"/>
-                </Trigger>
-                <Trigger Property="ItemsControl.AlternationCount" Value="2">
-                    <Setter Property="Background" Value="White"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
+
         <Style TargetType="TextBlock">
             <Setter Property="HorizontalAlignment" Value="Center"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
@@ -33,15 +25,17 @@
     </UserControl.Resources>
 
     <Grid>
-        <ItemsControl ItemsSource="{Binding Cells}">
+        <ItemsControl ItemsSource="{Binding Cells}" Name="cellContainer">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <UniformGrid Width="460" Height="460" Margin="10 10 10 10" Rows="9" Columns="9" Background="White"/>
+                    <UniformGrid Width="460" Height="460" Margin="10 10 10 10" Rows="{Binding Dimension}" Columns="{Binding Dimension}" Background="White"/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <DataGridCell BorderBrush="Black" BorderThickness="1" Content="{Binding Content, Converter={StaticResource emptyValueConverter}}"/>
+                    <Border>
+                        <DataGridCell BorderBrush="Black" BorderThickness="1" Content="{Binding Content, Converter={StaticResource emptyValueConverter}}"/>
+                    </Border>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>

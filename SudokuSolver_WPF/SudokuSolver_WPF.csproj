@@ -57,7 +57,8 @@
     </ApplicationDefinition>
     <Compile Include="BusinessLogic\SudokuCell.cs" />
     <Compile Include="BusinessLogic\SudokuParser.cs" />
-    <Compile Include="Commands\Command.cs" />
+    <Compile Include="BusinessLogic\SudokuSolver.cs" />
+    <Compile Include="Commands\MyCommand.cs" />
     <Compile Include="Converter\EmptyValueConverter.cs" />
     <Compile Include="UserControls\Sudoku.xaml.cs">
       <DependentUpon>Sudoku.xaml</DependentUpon>

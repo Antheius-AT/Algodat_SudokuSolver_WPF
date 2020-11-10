@@ -12,39 +12,23 @@ using SudokuSolver_WPF.Commands;
 
 namespace SudokuSolver_WPF.ViewModels
 {
+    /// <summary>
+    /// View Model for the main window view.
+    /// </summary>
     public class MainWindowViewModel
     {
-        private SudokuParser parser;
-
         public MainWindowViewModel()
         {
             this.SudokuViewModel = new SudokuViewModel();
-            this.parser = new SudokuParser();
         }
 
+        /// <summary>
+        /// Reference to the view model of the sudoku control.
+        /// </summary>
         public SudokuViewModel SudokuViewModel
         {
             get;
             set;
-        }
-
-        public ICommand LoadSudoku
-        {
-            get
-            {
-                return new MyCommand(p =>
-                {
-                    var dialog = new OpenFileDialog();
-                    dialog.Filter = "Text Files|*.txt";
-
-                    if (dialog.ShowDialog() == true)
-                    {
-                        var input = File.ReadAllText(dialog.FileName);
-                        this.SudokuViewModel.Cells = new ObservableCollection<SudokuCell>(this.parser.Parse(input));
-                    }
-                },
-                p => true);
-            }
         }
     }
 }
