@@ -1,124 +1,114 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SudokuSolver_WPF.BusinessLogic
 {
     public class SudokuSolver
     {
-        public SudokuSolver()
-        {
-
-        }
+        private SudokuCell[] cells;
 
         /// <summary>
         /// Tries to solve a specified sudoku.
         /// </summary>
         /// <param name="sudoku">The specified sudoku.</param>
         /// <returns>A value indicating whether the sudoku could be solved.</returns>
-        public bool TrySolve(SudokuCell[] sudoku, int currentIndex = 0, int currentValue = 1)
+        public bool TrySolve(SudokuCell[] sudoku)
         {
-            // Wenn index größer als array.length dann geschafft.
-            if (currentIndex < 0)
-                throw new Exception();
+            this.cells = sudoku;
+            return this.TrySolveRecursively(0, 1);
+        }
 
-            if (!sudoku[currentIndex].IsEditable)
+        /// <summary>
+        /// This method tries to solve the sudoku recursively using backtracking.
+        /// </summary>
+        /// <param name="currentIndex">The index of the current cell.</param>
+        /// <param name="currentValue">The current value that is tried to be placed in the cell.</param>
+        /// <returns>Whether the sudoku was solved or not.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Is thrown if current index is negative or greater than 80.
+        /// Is thrown if current value is less than 1 or greater than 9.
+        /// </exception>
+        private bool TrySolveRecursively(int currentIndex, int currentValue)
+        {
+            if (currentIndex < 0 || currentIndex > 80)
+                throw new ArgumentOutOfRangeException(nameof(currentIndex), "Index was out of range of a 9x9 sudoku.");
+
+            if (currentValue < 1 || currentValue > 9)
+                throw new ArgumentOutOfRangeException(nameof(currentValue), "Current value was out of range of a 9x9 sudoku.");
+
+            // This piece of code checks whether a given cell can be edited, and if it cannot be, it looks for the index
+            // of the next editable cell.
+            if (!this.cells[currentIndex].IsEditable)
             {
-                return this.TrySolve(sudoku, currentIndex + 1, 1);
-            }
-
-            if (currentValue > 9)
-            {
-                sudoku[currentIndex].Content = 0;
-
                 do
                 {
-                    currentIndex -= 1;
-                    currentValue = sudoku[currentIndex].Content + 1;
+                    currentIndex += 1;
                 }
-                while (!sudoku[currentIndex].IsEditable || currentValue == 9);
-
-                return this.TrySolve(sudoku, currentIndex, currentValue);
+                while (currentIndex != 81 && !this.cells[currentIndex].IsEditable);
             }
 
-            sudoku[currentIndex].Content = currentValue;
+            if (currentIndex > this.cells.Length - 1)
+                return true;
 
-            if (!this.IsValidMove(sudoku, currentIndex))
+            // This loop tries all of the currently possible numbers, 1-9 for the current cell.
+            for (int i = currentValue; i <= 9; i++)
             {
-                this.TrySolve(sudoku, currentIndex, currentValue + 1);
+                if (IsValidMove(currentIndex, i))
+                {
+                    this.cells[currentIndex].Content = i;
+
+                    if (this.TrySolveRecursively(currentIndex + 1, 1))
+                        return true;
+                }
             }
 
-            return this.TrySolve(sudoku, currentIndex + 1, 1);
+            this.cells[currentIndex].Content = 0;
+            return false;
         }
 
-        public bool Test(SudokuCell[] cells)
+        /// <summary>
+        /// Checks whether a move is valid.
+        /// </summary>
+        /// <param name="currentIndex">The index of the current cell.</param>
+        /// <param name="currentValue">The value that is checked for, whether it is valid.</param>
+        /// <returns>Whether the value can be placed in the cell at current index.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Thrown if current index is negative.
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Thrown if current value is less than 1 or greater than 9.
+        /// </exception>
+        private bool IsValidMove(int currentIndex, int currentValue)
         {
-            // Für jede Zelle beginnend bei 1 alle Möglichkeiten durchgehen. Danach immer prüfen ob korrekt.
-            // Wenn ja --> weiter. Nächste Zelle neu anfangen 
-            // Wenn Nein --> Zahl um 1 erhöhen und neu versuchen.
-            // Wenn bei 9 und passt nicht --> eine Zelle zurück springen und dort bei aktuellem Content anfangen hochzuzählen.
-            // Wenn bei erster Zelle und 9 keine Zahl passt, not solvable.
+            if (currentIndex < 0)
+                throw new ArgumentOutOfRangeException(nameof(currentIndex), "Current index was negative.");
 
-            int currentValue = 1;
+            if (currentValue < 0 || currentValue > 9)
+                throw new ArgumentOutOfRangeException(nameof(currentValue), "Current value was out of range for a 9x9 sudoku.");
 
-            for (int i = 0; i < cells.Length; i++)
-            {
-                if (!cells[i].IsEditable)
-                    continue;
+            int[] relatedIndexes = this.GetRelatedCellIndexes(currentIndex);
 
-                cells[i].Content = currentValue;
-
-                if (this.IsValidMove(cells, i))
-                {
-                    currentValue = 1;
-                    continue;
-                }
-                else
-                {
-                    currentValue++;
-
-                    if (currentValue > 9)
-                    {
-                        cells[i].Content = 0;
-
-                        do
-                        {
-                            i = this.GetPreviousEditableCell(i, cells);
-                            currentValue = cells[i].Content;
-                        }
-                        while (currentValue == 9);
-
-                        currentValue++;
-                        i--;
-                        continue;
-                    }
-
-                    i--;
-                }
-            }
-
-            return true;
-        }
-
-        private bool IsValidMove(SudokuCell[] cells, int currentIndex)
-        {
-            int[] relatedIndexes = this.GetRelatedCellIndexes(currentIndex, (int)Math.Sqrt(cells.Length));
-
-            foreach (var item in relatedIndexes)
+            foreach (var item in relatedIndexes.Distinct())
             {
                 if (item == currentIndex)
                     continue;
 
-                if (cells[currentIndex].Content == cells[item].Content)
+                if (currentValue == cells[item].Content)
                     return false;
             }
 
             return true;
         }
 
-        private int[] GetRelatedCellIndexes(int currentCellIndex, int sudokuDimension)
+        /// <summary>
+        /// This method gets all of the related cell indexes that need to be checked to determine whether a move is valid.
+        /// </summary>
+        /// <param name="currentCellIndex">The current cell index to which all the related indexes are needed.</param>
+        /// <returns>An array containing related cell indexes.</returns>
+        /// <exception cref="ArgumentException">
+        /// Is thrown if current index is negative.
+        /// </exception>
+        private int[] GetRelatedCellIndexes(int currentCellIndex)
         {
             if (currentCellIndex < 0)
                 throw new ArgumentException(nameof(currentCellIndex), "Current index must not be negative.");
@@ -127,26 +117,32 @@ namespace SudokuSolver_WPF.BusinessLogic
             int[] numbersInSameColumn;
             int[] numbersInSameBlock;
 
-            numbersInSameRow = this.GetNumbersInSameRow(currentCellIndex, sudokuDimension);
-
-            // All numbers that have the same result when taken modulo by the dimension are related due to being in the same column.
-            numbersInSameColumn = Enumerable.Range(0, sudokuDimension * sudokuDimension).Where(p => p % sudokuDimension == currentCellIndex % sudokuDimension).ToArray();
-            numbersInSameBlock = this.GetNumbersInSameBlock(currentCellIndex, sudokuDimension);
+            numbersInSameRow = this.GetNumbersInSameRow(currentCellIndex);
+            numbersInSameColumn = this.GetNumbersInSameColumn(currentCellIndex);
+            numbersInSameBlock = this.GetNumbersInSameBlock(currentCellIndex);
 
             return numbersInSameRow.Concat(numbersInSameColumn).Concat(numbersInSameBlock).Distinct().ToArray();
         }
 
-        private int[] GetNumbersInSameBlock(int currentCellIndex, int sudokuDimension)
+        /// <summary>
+        /// Gets numbers that are contained in the same block as the number at the specified index.
+        /// </summary>
+        /// <param name="currentCellIndex">The current cell index.</param>
+        /// <returns>An array containing all of the indexes that are contained in the same block as the current cell index.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Thrown if current cell index is negative or greater than 80.
+        /// </exception>
+        private int[] GetNumbersInSameBlock(int currentCellIndex)
         {
-            // The idea here is to first calculate the row and column positions, and then work with the modulo of 3, as there are 3 cells per 
-            // block, to get the starting index of the block, from which point I can subsequently add the cells of a block.
-            // -1 again to compensate for the index.
-            var column = currentCellIndex % sudokuDimension;
-            var row = currentCellIndex / sudokuDimension != 0 ? (currentCellIndex / sudokuDimension) - 1 : 0;
+            if (currentCellIndex < 0 || currentCellIndex > 80)
+                throw new ArgumentOutOfRangeException(nameof(currentCellIndex), "Index was out of range of a 9x9 sudoku.");
+
+            var column = currentCellIndex % 9;
+            var row = currentCellIndex / 9 != 0 ? (currentCellIndex / 9) : 0;
             var blockColumnStartIndex = column - column % 3;
             var blockRowStartIndex = row - row % 3;
 
-            var firstBlockCellIndex = blockRowStartIndex * 3 + blockColumnStartIndex;
+            var firstBlockCellIndex = blockRowStartIndex * 9 + blockColumnStartIndex;
 
             var blockRelatedIndexes = new int[]
             {
@@ -173,37 +169,47 @@ namespace SudokuSolver_WPF.BusinessLogic
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown if either of the parameters are negative.
         /// </exception>
-        private int[] GetNumbersInSameRow(int currentCellIndex, int dimension)
+        private int[] GetNumbersInSameRow(int currentCellIndex)
         {
-            if (currentCellIndex < 0 | dimension < 0)
+            if (currentCellIndex < 0)
                 throw new ArgumentOutOfRangeException("Either current cell index or dimension were invalid due to being negative.");
 
             int lowerBound;
             int stepsToLeft;
 
-            // Subtract 1 from upper bound to compensate for the index starting with 0.
-            stepsToLeft = currentCellIndex % dimension;
+            stepsToLeft = currentCellIndex % 9;
             lowerBound = currentCellIndex - stepsToLeft;
 
-            return Enumerable.Range(lowerBound, dimension).ToArray();
+            return Enumerable.Range(lowerBound, 9).ToArray();
         }
 
-        private int GetPreviousEditableCell(int currentIndex, SudokuCell[] cells)
+        /// <summary>
+        /// Gets numbers that are contained in the same column as the number at the specified index.
+        /// </summary>
+        /// <param name="currentCellIndex">The current cell index.</param>
+        /// <returns>A collection of numbers that are contained in the same column.</returns>
+        private int[] GetNumbersInSameColumn(int currentCellIndex)
         {
-            if (currentIndex <= 0)
-                throw new ArgumentException("Not solvbable");
+            int stepsToTop;
+            int lowestIndex;
 
-            currentIndex--;
+            stepsToTop = currentCellIndex / 9;
+            lowestIndex = currentCellIndex - (stepsToTop * 9);
 
-            while (!cells[currentIndex].IsEditable)
-            {
-                currentIndex--;
+            var blockRelatedIndexes = new int[]
+          {
+                lowestIndex,
+                lowestIndex + 9,
+                lowestIndex + 18,
+                lowestIndex + 27,
+                lowestIndex + 36,
+                lowestIndex + 45,
+                lowestIndex + 54,
+                lowestIndex + 63,
+                lowestIndex + 72,
+          };
 
-                if (currentIndex < 0)
-                    throw new ArgumentException("not solvable");
-            }
-
-            return currentIndex;
+            return blockRelatedIndexes;
         }
     }
 }

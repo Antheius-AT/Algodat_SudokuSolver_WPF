@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="BusinessLogic\Change.cs" />
     <Compile Include="BusinessLogic\SudokuCell.cs" />
     <Compile Include="BusinessLogic\SudokuParser.cs" />
     <Compile Include="BusinessLogic\SudokuSolver.cs" />

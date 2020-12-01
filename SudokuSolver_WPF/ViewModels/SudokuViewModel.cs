@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Input;
 using Microsoft.Win32;
 using SudokuSolver_WPF.BusinessLogic;
@@ -25,8 +26,8 @@ namespace SudokuSolver_WPF.ViewModels
         public SudokuViewModel()
         {
             this.parser = new SudokuParser();
-            this.solver = new SudokuSolver();
             this.Cells = new ObservableCollection<SudokuCell>();
+            this.solver = new SudokuSolver();
         }
 
         /// <summary>
@@ -97,10 +98,21 @@ namespace SudokuSolver_WPF.ViewModels
 
                     if (dialog.ShowDialog() == true)
                     {
-                        var input = File.ReadAllText(dialog.FileName);
-                        this.Cells = new ObservableCollection<SudokuCell>(this.parser.Parse(input));
-                        this.IsSudokuLoaded = true;
-                        this.Dimension = Convert.ToInt32(Math.Sqrt(this.Cells.Count));
+                        try
+                        {
+                            var input = File.ReadAllText(dialog.FileName);
+                            this.Cells = new ObservableCollection<SudokuCell>(this.parser.Parse(input));
+                            this.IsSudokuLoaded = true;
+                            this.Dimension = Convert.ToInt32(Math.Sqrt(this.Cells.Count));
+                        }
+                        catch (ArgumentException)
+                        {
+                            MessageBox.Show("Sudoku was not a valid 9x9 sudoku and could not be parsed", "Sudoku invalid", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                        catch(Exception e)
+                        {
+                            MessageBox.Show($"Some other error occurred: {e.Message}", "An error occurred", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
                     }
                 },
                 p => true);
@@ -117,12 +129,12 @@ namespace SudokuSolver_WPF.ViewModels
                 return new MyCommand(p =>
                 {
                     var toSolve = this.Cells.ToArray();
-                    var success = this.solver.TrySolve(toSolve, 0, 1);
+                    var success = this.solver.TrySolve(toSolve);
 
                     if (success)
                         this.Cells = new ObservableCollection<SudokuCell>(toSolve);
                     else
-                        this.RaiseSudokuNotSolved();
+                        this.HandleSudokuNotSolved();
                 },
                 p => this.IsSudokuLoaded);
             }
@@ -157,11 +169,14 @@ namespace SudokuSolver_WPF.ViewModels
         }
 
         /// <summary>
-        /// Raises the event that signals that the sudoku was not solved.
+        /// Handles the case in which a sudoku could not be solved.
         /// </summary>
-        protected virtual void RaiseSudokuNotSolved()
+        protected virtual void HandleSudokuNotSolved()
         {
-            throw new NotImplementedException();
+            var result = MessageBox.Show("The sudoku could not be solved. Do you want to unload it?", "Sudoku not solved", MessageBoxButton.YesNo, MessageBoxImage.Information, MessageBoxResult.Yes);
+
+            if (result == MessageBoxResult.Yes)
+                this.UnloadSudoku.Execute(null);
         }
     }
 }

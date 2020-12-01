@@ -28,7 +28,7 @@ namespace SudokuSolver_WPF.BusinessLogic
 
         public override string ToString()
         {
-            return this.Content.ToString();
+            return $"Content: {this.Content}. IsEditable: {this.IsEditable}";
         }
     }
 }
