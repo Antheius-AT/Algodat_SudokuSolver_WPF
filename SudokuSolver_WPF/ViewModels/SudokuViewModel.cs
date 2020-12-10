@@ -6,8 +6,8 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
+using SudokuSolver_Logic;
 using Microsoft.Win32;
-using SudokuSolver_WPF.BusinessLogic;
 using SudokuSolver_WPF.Commands;
 
 namespace SudokuSolver_WPF.ViewModels

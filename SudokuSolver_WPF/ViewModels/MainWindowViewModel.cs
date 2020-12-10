@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Win32;
-using SudokuSolver_WPF.BusinessLogic;
+using SudokuSolver_Logic;
 using SudokuSolver_WPF.Commands;
 
 namespace SudokuSolver_WPF.ViewModels

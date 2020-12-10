@@ -1,8 +1,17 @@
-﻿using System;
-using System.Linq;
-
-namespace SudokuSolver_WPF.BusinessLogic
+﻿//-----------------------------------------------------------------------
+// <copyright file="SudokuSolver.cs" company="FHWN">
+//     Copyright (c) FHWN. All rights reserved.
+// </copyright>
+// <author>Gregor Faiman</author>
+//-----------------------------------------------------------------------
+namespace SudokuSolver_Logic
 {
+    using System;
+    using System.Linq;
+
+    /// <summary>
+    /// The solver class. can be used to solve a 9x9 sudoku.
+    /// </summary>
     public class SudokuSolver
     {
         private SudokuCell[] cells;
@@ -12,8 +21,14 @@ namespace SudokuSolver_WPF.BusinessLogic
         /// </summary>
         /// <param name="sudoku">The specified sudoku.</param>
         /// <returns>A value indicating whether the sudoku could be solved.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// Is thrown if sudoku is null.
+        /// </exception>
         public bool TrySolve(SudokuCell[] sudoku)
         {
+            if (sudoku == null)
+                throw new ArgumentNullException(nameof(sudoku), "Sudoku must not be null.");
+
             this.cells = sudoku;
             return this.TrySolveRecursively(0, 1);
         }

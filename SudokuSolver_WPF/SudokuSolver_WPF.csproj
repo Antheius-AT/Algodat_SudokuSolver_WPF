@@ -55,9 +55,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="BusinessLogic\SudokuCell.cs" />
-    <Compile Include="BusinessLogic\SudokuParser.cs" />
-    <Compile Include="BusinessLogic\SudokuSolver.cs" />
     <Compile Include="Commands\MyCommand.cs" />
     <Compile Include="Converter\EmptyValueConverter.cs" />
     <Compile Include="UserControls\Sudoku.xaml.cs">
@@ -107,6 +104,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SudokuSolver_Logic\SudokuSolver_Logic.csproj">
+      <Project>{a36f3909-2fb7-4b02-b1d0-1708b9eaf64f}</Project>
+      <Name>SudokuSolver_Logic</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

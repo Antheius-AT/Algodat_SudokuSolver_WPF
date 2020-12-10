@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SudokuSolver_WPF.BusinessLogic
+namespace SudokuSolver_Logic
 {
     public class SudokuCell
     {
@@ -24,11 +24,6 @@ namespace SudokuSolver_WPF.BusinessLogic
         {
             get;
             set;
-        }
-
-        public override string ToString()
-        {
-            return $"Content: {this.Content}. IsEditable: {this.IsEditable}";
         }
     }
 }

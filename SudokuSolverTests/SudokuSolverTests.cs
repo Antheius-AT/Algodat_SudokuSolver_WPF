@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using SudokuSolver_WPF.BusinessLogic;
-
+using SudokuSolver_Logic;
 namespace SudokuSolverTests
 {
     public class Tests
@@ -148,6 +147,47 @@ namespace SudokuSolverTests
             {
                 if (cells.Count(cell => cell.Content == i) != 9)
                     Assert.Fail();
+            }
+
+            Assert.Pass();
+        }
+
+        [Test]
+        [TestCase(@"5, 3, 0, 0, 7, 0, 0, 0, 0
+                    6, 0, 0, 1, 9, 5, 0, 0, 0
+                    0, 9, 8, 0, 0, 0, 0, 6, 0
+                    8, 0, 0, 0, 6, 0, 0, 0, 3
+                    4, 0, 0, 8, 0, 3, 0, 0, 1
+                    7, 0, 0, 0, 2, 0, 0, 0, 6
+                    0, 6, 0, 0, 0, 0, 2, 8, 0
+                    0, 0, 0, 4, 1, 9, 0, 0, 5
+                    0, 0, 0, 0, 8, 0, 0, 7, 9")]
+        public void Does_ParsingSudoku_CorrectlyDistinguishBetween_Editable_And_NotEditable_Cells(string input)
+        {
+            var sudoku = this.parser.Parse(input);
+
+            var splitInput = input.Split('\r', '\n').Where(p => !string.IsNullOrWhiteSpace(p));
+            var control = new List<string>();
+
+            foreach (var item in splitInput)
+            {
+                control.AddRange(item.Replace(" ", string.Empty).Split(','));
+            }
+
+            if (control.Count != sudoku.Length)
+                Assert.Fail();
+
+            for (int i = 0; i < control.Count; i++)
+            {
+                bool expected;
+
+                if (int.Parse(control[i]) == 0)
+                    expected = true;
+                else
+                    expected = false;
+
+                if (expected != sudoku[i].IsEditable)
+                    Assert.Fail("Editable property did not match");
             }
 
             Assert.Pass();

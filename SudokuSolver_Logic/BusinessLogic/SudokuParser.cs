@@ -1,15 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SudokuSolver_WPF.BusinessLogic
+﻿//-----------------------------------------------------------------------
+// <copyright file="SudokuParser.cs" company="FHWN">
+//     Copyright (c) FHWN. All rights reserved.
+// </copyright>
+// <author>Gregor Faiman</author>
+//-----------------------------------------------------------------------
+namespace SudokuSolver_Logic
 {
+    using System;
+    using System.Linq;
+
+    /// <summary>
+    /// This class is able to parse strings containing numbers into sudoku boards.
+    /// </summary>
     public class SudokuParser
     {
         /// <summary>
-        /// Attempt to parse a sudoku.
+        /// Parses a sudoku from an input string. 
+        /// While this method validates sudoku dimension (currently only 9x9 sudokus supported) and whether
+        /// the input string only contains numbers, it does not validate whether a sudoku is solvable.
+        /// So you could theoretically parse an obviously invalid sudoku using this method.
         /// </summary>
         /// <param name="input">The sudoku formatted as an input string.</param>
         /// <returns>The parsed Sudoku as an array of cells.</returns>
