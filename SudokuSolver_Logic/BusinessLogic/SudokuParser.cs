@@ -39,7 +39,7 @@ namespace SudokuSolver_Logic
                 var current = splitInput.ElementAt(i).Replace(" ", string.Empty).Split(',');
 
                 if (!this.ValidateRow(current))
-                    throw new ArgumentException(nameof(input), "Input was not a valid 9x9 sudoku.");
+                    throw new ArgumentException(nameof(input), "Input row was not valid for a 9x9 sudoku.");
 
                 // After checking whether the row is valid, this line right here creates a sudoku cell based on the current number in the row.
                 var row = current.Select(p => Convert.ToInt32(p) != 0 ? new SudokuCell(Convert.ToInt32(p), false) : new SudokuCell(0, true)).ToArray();
