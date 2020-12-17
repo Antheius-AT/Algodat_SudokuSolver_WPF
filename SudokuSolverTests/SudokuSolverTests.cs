@@ -143,13 +143,129 @@ namespace SudokuSolverTests
 
             this.solver.TrySolve(cells);
 
-            for (int i = 1; i < 10; i++)
+            for (int i = 0; i < 81; i++)
             {
-                if (cells.Count(cell => cell.Content == i) != 9)
-                    Assert.Fail();
+                var indexes = this.solver.GetNumbersInSameRow(i);
+
+                for (int j = 0; j < 9; j++)
+                {
+                    if (cells[i].Content == cells[indexes[j]].Content && indexes[j] != i)
+                        Assert.Fail();
+                }
+
+                indexes = this.solver.GetNumbersInSameBlock(i);
+
+                for (int j = 0; j < 9; j++)
+                {
+                    if (cells[i].Content == cells[indexes[j]].Content && indexes[j] != i)
+                        Assert.Fail();
+                }
+
+                indexes = this.solver.GetNumbersInSameColumn(i);
+
+                for (int j = 0; j < 9; j++)
+                {
+                    if (cells[i].Content == cells[indexes[j]].Content && indexes[j] != i)
+                        Assert.Fail();
+                }
             }
 
             Assert.Pass();
+        }
+
+        [TestCase(0)]
+        [TestCase(5)]
+        [TestCase(20)]
+        [TestCase(81)]
+        [Test]
+        public void Does_Method_GetNumbersInSameColumn_ReturnCorrectValues(int index)
+        {
+            var result = this.solver.GetNumbersInSameColumn(index);
+
+            var control = new List<int>();
+
+            while (index - 9 >= 0)
+            {
+                index -= 9;
+            }
+
+            for (int i = index; i < 81;)
+            {
+                control.Add(i);
+                i += 9;
+            }
+
+            Assert.AreEqual(control.ToArray(), result);
+        }
+
+        [Test]
+        [TestCase(0)]
+        [TestCase(8)]
+        [TestCase(11)]
+        [TestCase(78)]
+        public void Does_Method_GetNumbersInSameRow_ReturnCorrectValues(int index)
+        {
+            var result = this.solver.GetNumbersInSameRow(index);
+
+            var control = new List<int>();
+
+            while (index % 9 != 0)
+            {
+                index -= 1;
+            }
+
+            for (int i = index; i < index + 9; i++)
+            {
+                control.Add(i);
+            }
+
+            Assert.AreEqual(control.ToArray(), result);
+        }
+
+        [Test]
+        [TestCase(5)]
+        [TestCase(7)]
+        [TestCase(13)]
+        [TestCase(0)]
+        [TestCase(79, 60, 61, 62, 69, 70, 71, 78, 79, 80)]
+        public void Does_Method_GetNumbersInSameBlock_ReturnCorrectValues(int index, params int[] expected)
+        {
+            var result = this.solver.GetNumbersInSameBlock(index);
+
+            if (expected.Length == 0)
+            {
+                var control = new List<int>();
+
+                while (index - 9 >= 0)
+                {
+                    index -= 9;
+                }
+
+                while (index % 3 != 0)
+                {
+                    index -= 1;
+                }
+
+                var counter = 0;
+
+                // Add numbers in block to control
+                do
+                {
+                    control.Add(index + counter);
+                    counter += 1;
+
+                    if (counter % 3 == 0)
+                    {
+                        index += 9;
+                        counter = 0;
+                    }
+                }
+                while (control.Count < 9);
+
+                expected = control.ToArray();
+            }
+
+            Assert.AreEqual(expected, result);
         }
 
         [Test]

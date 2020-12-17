@@ -4,6 +4,9 @@
 // </copyright>
 // <author>Gregor Faiman</author>
 //-----------------------------------------------------------------------
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("SudokuSolverTests")]
 namespace SudokuSolver_Logic
 {
     using System;
@@ -147,7 +150,7 @@ namespace SudokuSolver_Logic
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown if current cell index is negative or greater than 80.
         /// </exception>
-        private int[] GetNumbersInSameBlock(int currentCellIndex)
+        internal int[] GetNumbersInSameBlock(int currentCellIndex)
         {
             if (currentCellIndex < 0 || currentCellIndex > 80)
                 throw new ArgumentOutOfRangeException(nameof(currentCellIndex), "Index was out of range of a 9x9 sudoku.");
@@ -184,7 +187,7 @@ namespace SudokuSolver_Logic
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown if either of the parameters are negative.
         /// </exception>
-        private int[] GetNumbersInSameRow(int currentCellIndex)
+        internal int[] GetNumbersInSameRow(int currentCellIndex)
         {
             if (currentCellIndex < 0)
                 throw new ArgumentOutOfRangeException("Either current cell index or dimension were invalid due to being negative.");
@@ -203,7 +206,7 @@ namespace SudokuSolver_Logic
         /// </summary>
         /// <param name="currentCellIndex">The current cell index.</param>
         /// <returns>A collection of numbers that are contained in the same column.</returns>
-        private int[] GetNumbersInSameColumn(int currentCellIndex)
+        internal int[] GetNumbersInSameColumn(int currentCellIndex)
         {
             int stepsToTop;
             int lowestIndex;
@@ -212,7 +215,7 @@ namespace SudokuSolver_Logic
             lowestIndex = currentCellIndex - (stepsToTop * 9);
 
             var blockRelatedIndexes = new int[]
-          {
+            {
                 lowestIndex,
                 lowestIndex + 9,
                 lowestIndex + 18,
@@ -222,7 +225,7 @@ namespace SudokuSolver_Logic
                 lowestIndex + 54,
                 lowestIndex + 63,
                 lowestIndex + 72,
-          };
+            };
 
             return blockRelatedIndexes;
         }
